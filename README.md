@@ -55,4 +55,29 @@ There are 2 files that help you deployed on PWS. The *Staticfile* is a marker fi
 You may have to change the manifest.yml to avoid route conflicts before issuing the *cf push* command. 
 
 ## Spring Cloud Data Flow
+Let's infer you have a Spring Cloud Data Flow environment ready. 
+
+The first step is to register the particle.io source. You can then verify with *app list** command. 
+
+**TODO: Change to Bintray repo**
+```
+app register --name particle --type source --uri file:///Users/mborges/Tools/PARTICLE/scdf/particlesource/target/particle-source-0.0.1-SNAPSHOT.jar
+```
+
+Then you can create a stream to consume particle.io Cloud events. The particle source takes deviceId, accessToken and regex for eventName. 
+
+```
+stream create --definition "particle --particle.deviceId=3c0023000a47353138383138 --particle.accessToken=459b6cd6b7d6c32fa728ec9ceaf941bfdfcfb5f1 --particle.eventName=.* | log" --name cf-iot --deploy
+```
+
+All events are bring logged now. You can use the power of Spring Cloud Data Flow to process the events. The example below we use a **tap** with **processor** to extract just the data part of the event message.
+
+```
+stream create cf-iot-value --definition ":cf-iot.particle > transform --expression=#jsonPath(payload,'$.data') | log" --deploy
+```
+
+
+
+
+
 
