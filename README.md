@@ -16,21 +16,25 @@ The list below provides the parts for building this sample project. We start wit
 
 The components are pretty cheap, so you may want to explore more the photon capabilities when buying them.
 
-## Applications
-* Standalone - This application talks directly to the particle.io cloud API. 
-* firmware - This is the firmware code for you photon.
-* Spring Cloud Data Flow Source module - this provides the ability to receive events from particle.io cloud API
+## Firmware
+The firmware code need to be flashed to your photon. The wiring needs to follow the PIN constants in the firmware code. 
 
-### Firmware
-THe firmware code need to be flashed to your photon. The wiring needs to follow the PIN constants in the firmware code. 
+**Wiring**
 
-** Wiring **
 We start from the basic wiring from the [particle.io Getting Started](https://docs.particle.io/guide/getting-started/start/photon/). Then we wire the temperature sensor and pushdown button switch.
 
 **TODO** - Wiring diagram
 
-** Particle Dashboard **
+**Particle Dashboard**
+
 Once you flashed the firmware you should be able to go to the Particle Dashboard and see the events for your Photon device.
+
+**Congratulations!!!** you have your edge sensor up and running. 
+
+## Applications
+* Standalone - This application talks directly to the particle.io cloud API. 
+* firmware - This is the firmware code for you photon.
+* Spring Cloud Data Flow Source module - this provides the ability to receive events from particle.io cloud API
 
 ### Running the standalone application
 This application is a single page that can be run locally. Simply open the index.html page on your browser and the application will connect directly to the particle.io cloud using javascript. 
@@ -49,4 +53,6 @@ var url = "https://api.spark.io/v1/devices/" + deviceID;
 There are 2 files that help you deployed on PWS. The *Staticfile* is a marker file to tell PCF that you want to use the static buildpack. The *manifest.yml* provides the options for the cf push command. 
 
 You may have to change the manifest.yml to avoid route conflicts before issuing the *cf push* command. 
+
+## Spring Cloud Data Flow
 
