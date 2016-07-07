@@ -19,3 +19,9 @@ The components are pretty cheap, so you may want to explore more the photon capa
 * Standalone - This application talks directly to the particle.io cloud API. 
 * Spring Cloud Data Flow Source module - this provides the ability to receive events from particle.io cloud API
 
+### Running the standalone application
+This application is a single page that can be run locally. Simply open the index.html page on your browser and the application will connect directly to the particle.io cloud using javascript. 
+
+**Running on Pivotal Web Services**
+There are 2 files that help you deployed on PWS. The Staticfile is a marker file to tell PCF that you want to use the static buildpack. The manifest.yml provides the options for the cf push command. You may have to change the manifest.yml to avoid route conflicts. 
+
