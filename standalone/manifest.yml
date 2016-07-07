@@ -1,0 +1,7 @@
+---
+applications:
+- name: cf-particle
+  memory: 74MB
+  instances: 1
+  path: .
+  services: []
