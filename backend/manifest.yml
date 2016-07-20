@@ -1,0 +1,7 @@
+---
+applications:
+- name: cf-backend
+  memory: 512MB
+  instances: 1
+  path: target/backend-0.0.1-SNAPSHOT.jar
+  services: []

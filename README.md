@@ -54,6 +54,11 @@ There are 2 files that help you deployed on PWS. The *Staticfile* is a marker fi
 
 You may have to change the manifest.yml to avoid route conflicts before issuing the *cf push* command. 
 
+### Running the backend application
+This application uses Spring Cloud Data Flow to process the events from the particle.io cloud. Like the particle.io cloud, it acts as a Server-Sent Event server therefore we can leverage the existing standalone application code. 
+
+This is a Spring Boot Web application that uses RabbitMQ to receive events from Spring Cloud Data Flow. It runs on PWS much like the standlone application. 
+
 ## Spring Cloud Data Flow
 Let's infer you have a Spring Cloud Data Flow environment ready. 
 
@@ -75,9 +80,6 @@ All events are bring logged now. You can use the power of Spring Cloud Data Flow
 ```
 stream create cf-iot-value --definition ":cf-iot.particle > transform --expression=#jsonPath(payload,'$.data') | log" --deploy
 ```
-
-
-
 
 
 
