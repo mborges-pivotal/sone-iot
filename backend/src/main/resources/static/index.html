@@ -98,11 +98,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 // PARTICLE API
 // Still used for reading variables and calling functions
-var accessToken = "459b6cd6b7d6c32fa728ec9ceaf941bfdfcfb5f1";
 var deviceID = "3c0023000a47353138383138"
-var url = "https://api.spark.io/v1/devices/" + deviceID;
 
-var eventSource = new EventSource("/events/?access_token=" + accessToken);
+var eventSource = new EventSource("/events");
 
 eventSource.addEventListener('open', function(e) {
 console.log("Opened!"); },false);
@@ -136,7 +134,7 @@ function callback(data, status){
 			gaugeVolts.refresh(volts);
 			setTimeout(getVolts, 2000);			
 		}
-		letStatus();
+		ledStatus();
 	}
 	else {
 		alert("There was a problem");
@@ -144,23 +142,23 @@ function callback(data, status){
 }
 
 function getVolts(){
-   	$.get(url + "/volts", {access_token: accessToken}, callback);
+   	$.get("/device/" + deviceID + "/volts", callback);
 }
 
 function switchOn()
 {
-	$.post(url + "/led", {params: "on", access_token: accessToken });
+	$.post("/device/" + deviceID + "/led", {args: "on"});
 }  
 
 function switchOff()
 {
-	$.post(url + "/led", {params: "off", access_token: accessToken });
+	$.post("/device/" + deviceID + "/led", {args: "off"});
 	$('#above40').text("");
 }  
 
-function letStatus()
+function ledStatus()
 {
-	$.post(url + "/status", {params: "on", access_token: accessToken }, function( data ) {
+	$.post("/device/" + deviceID +  "/status", {args: "on"}, function( data ) {
   		if (data.return_value) {
   			$('#bOff').prop('disabled', false);
   			$('#bOn').prop('disabled', true);
@@ -178,7 +176,7 @@ function xDataPoint() {
 
 function location() {
 
-   	$.get(url, {access_token: accessToken}, function( data ) {
+   	$.get("/device/" + deviceID, function( data ) {
    		console.log(data);
    		ipAddress = data.last_ip_address;
    		console.log(ipAddress)
@@ -278,7 +276,7 @@ var gaugeTemperature = new JustGage({
 });
 
 getVolts();
-letStatus();
+ledStatus();
 location();
 
 var canvas = document.getElementById('updating-chart');
