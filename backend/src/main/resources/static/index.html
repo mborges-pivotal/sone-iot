@@ -3,7 +3,8 @@
 
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, user-scalable=no">
 
 <!--
 
@@ -18,26 +19,26 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <title>CF IOT</title>
 
-  <style>
-  .gauge {
-    width: 140px;
-    height: 140px;
-  }
-  #map-canvas
-  {
-    width: 100%;
-    height: 250px;
-    /*
+<style>
+.gauge {
+	width: 140px;
+	height: 140px;
+}
+
+#map-canvas {
+	width: 100%;
+	height: 250px;
+	/*
     margin-left: auto;
     margin-right: auto;
     */
-  }
-
-  </style>
+}
+</style>
 
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 <!--
 <script src="raphael.2.1.0.min.js"></script>
@@ -48,17 +49,27 @@
 <script src="js/justgage.js"></script>
 
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	crossorigin="anonymous">
 
 <!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+	crossorigin="anonymous">
 
 <!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
 
 <script src="http://www.chartjs.org/assets/Chart.min.js"></script>
 
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script
+	src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 
 
 <!--
@@ -73,271 +84,354 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 -->
 
 <script>
+	// GOOGLE MAP API
+	var map;
+	var marker;
+	var loc;
+	function initialize() {
+		var mapOptions = {
+			zoom : 3,
+			minZoom : 3,
+			maxZoom : 8,
+			draggable : true,
+			disableDefaultUI : true,
+			center : new google.maps.LatLng(0.0, 0.0)
+		};
+		map = new google.maps.Map(document.getElementById('map-canvas'),
+				mapOptions);
 
-// GOOGLE MAP API
-var map;
-var marker;
-var loc;
-function initialize() {
-    var mapOptions = {
-        zoom: 3,
-        minZoom: 3,
-        maxZoom: 8,
-        draggable: true,
-        disableDefaultUI: true,
-        center: new google.maps.LatLng(0.0, 0.0)
-    };
-    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-	
-	marker = new google.maps.Marker({position: new google.maps.LatLng(0.0, 0.0), map: map});
-	
-	marker.setMap(map);
-}
+		marker = new google.maps.Marker({
+			position : new google.maps.LatLng(0.0, 0.0),
+			map : map
+		});
 
-google.maps.event.addDomListener(window, 'load', initialize);
-
-// PARTICLE API
-// Still used for reading variables and calling functions
-var deviceID = "3c0023000a47353138383138"
-
-var eventSource = new EventSource("/events");
-
-eventSource.addEventListener('open', function(e) {
-console.log("Opened!"); },false);
-
-eventSource.addEventListener('error', function(e) {
-console.log("Errored!"); },false);
-
-eventSource.addEventListener('above40', function(e) {
-	var parsedData = JSON.parse(e.data);
-	var data = parsedData.data.split(",");				
-	console.log( parsedData.data);
-	$('#above40').text(data);
-}, false);
-
-eventSource.addEventListener('temperature', function(e) {
-	var data = JSON.parse(e.data).data;
-	temperature = parseFloat(data);
-	temperature = temperature.toFixed(2);
-	gaugeTemperature.refresh(temperature);
-	myLiveChart.addData([temperature], xDataPoint());
-	if (myLiveChart.datasets[0].points.length > 20) {
-		myLiveChart.removeData();
+		marker.setMap(map);
 	}
-}, false);
 
-function callback(data, status){
-	if (status == "success") {
-		if (data.name == "volts") {
-			volts = parseFloat(data.result);
-			volts = volts.toFixed(2);
-			gaugeVolts.refresh(volts);
-			setTimeout(getVolts, 2000);			
+	google.maps.event.addDomListener(window, 'load', initialize);
+
+	// PARTICLE API
+	// Still used for reading variables and calling functions
+	var deviceID = "3c0023000a47353138383138"
+
+	var devices;
+
+	var eventSource = new EventSource("/events");
+
+	var lastEventDeviceId;
+
+	eventSource.addEventListener('open', function(e) {
+		console.log("Opened!");
+	}, false);
+
+	eventSource.addEventListener('error', function(e) {
+		console.log("Errored!");
+	}, false);
+
+	// EVENTS
+
+	eventSource.addEventListener('above40', function(e) {
+		var parsedData = JSON.parse(e.data);
+		var data = parsedData.data.split(",");
+		console.log(parsedData.data);
+		$('#above40').text(data);
+	}, false);
+
+	eventSource.addEventListener('temperature', function(e) {
+		var data = JSON.parse(e.data);
+		var evtData = data.data;
+
+		if (data.coreId != lastEventDeviceId) {
+			lastEventDeviceId = data.coreid;
+			console.log("receive event for new device - " + lastEventDeviceId);
 		}
-		ledStatus();
+
+		temperature = parseFloat(evtData);
+		temperature = temperature.toFixed(2);
+
+		temperature2 = parseFloat(evtData) + 1;
+		temperature2 = temperature2.toFixed(2);
+
+		gaugeTemperature.refresh(temperature);
+
+		myLiveChart.addData([ temperature, temperature2 ], xDataPoint());
+		if (myLiveChart.datasets[0].points.length > 20) {
+			myLiveChart.removeData();
+		}
+
+	}, false);
+
+	// Volts - light sensor and LED control
+
+	function callback(data, status) {
+		if (status == "success") {
+			if (data.name == "volts") {
+				volts = parseFloat(data.result);
+				volts = volts.toFixed(2);
+				gaugeVolts.refresh(volts);
+				setTimeout(getVolts, 2000);
+			}
+			ledStatus();
+		} else {
+			alert("There was a problem");
+		}
 	}
-	else {
-		alert("There was a problem");
+
+	function getVolts() {
+		$.get("/device/" + deviceID + "/volts", callback);
 	}
-}
 
-function getVolts(){
-   	$.get("/device/" + deviceID + "/volts", callback);
-}
+	function switchOn() {
+		$.post("/device/" + deviceID + "/led", {
+			args : "on"
+		});
+	}
 
-function switchOn()
-{
-	$.post("/device/" + deviceID + "/led", {args: "on"});
-}  
+	function switchOff() {
+		$.post("/device/" + deviceID + "/led", {
+			args : "off"
+		});
+		$('#above40').text("");
+	}
 
-function switchOff()
-{
-	$.post("/device/" + deviceID + "/led", {args: "off"});
-	$('#above40').text("");
-}  
+	function ledStatus() {
+		$.post("/device/" + deviceID + "/status", {
+			args : "on"
+		}, function(data) {
+			if (data.return_value) {
+				$('#bOff').prop('disabled', false);
+				$('#bOn').prop('disabled', true);
+			} else {
+				$('#bOff').prop('disabled', true);
+				$('#bOn').prop('disabled', false);
+			}
+		});
+	}
 
-function ledStatus()
-{
-	$.post("/device/" + deviceID +  "/status", {args: "on"}, function( data ) {
-  		if (data.return_value) {
-  			$('#bOff').prop('disabled', false);
-  			$('#bOn').prop('disabled', true);
-  		} else {
-  			$('#bOff').prop('disabled', true);
-  			$('#bOn').prop('disabled', false);
-  		}
-	});
-}  
+	function xDataPoint() {
+		var now = new Date();
+		return (now.getMinutes() + ":" + now.getSeconds());
+	}
 
-function xDataPoint() {
-	var now = new Date();
-	return (now.getMinutes() + ":" + now.getSeconds());
-}
+	//Plot device location
+	function location() {
 
-function location() {
+		$.get("/device/" + deviceID, function(data) {
+			console.log(data);
+			ipAddress = data.last_ip_address;
+			console.log(ipAddress)
+			var locApiUrl = "https://freegeoip.net/json/" + ipAddress;
+			console.log(locApiUrl);
 
-   	$.get("/device/" + deviceID, function( data ) {
-   		console.log(data);
-   		ipAddress = data.last_ip_address;
-   		console.log(ipAddress)
-   		var locApiUrl = "https://freegeoip.net/json/" + ipAddress;
-		console.log(locApiUrl);
+			$.get(locApiUrl, function(data) {
+				console.log(data);
+				loc = new google.maps.LatLng(data.latitude, data.longitude);
 
-   		$.get(locApiUrl, function( data ) {
-   			console.log(data);
-			loc = new google.maps.LatLng(data.latitude, data.longitude);				
-			
-			marker.setMap(null);	
-			marker = new google.maps.Marker({position: loc, map: map});				
-			marker.setMap(null);
-			map.panTo(loc);
-			marker.setMap(map);
+				marker.setMap(null);
+				marker = new google.maps.Marker({
+					position : loc,
+					map : map
+				});
+				marker.setMap(null);
+				map.panTo(loc);
+				marker.setMap(map);
 
-		});	
+			});
 
-	});	
+		});
+	}
 
+	// Get list of devices
+	function devices() {
 
-}
+		var selDevices = $('#devices');
 
+		$.get("/devices/", function(data) {
+			devices = data;
+			for ( var i in devices) {
+				if (devices[i].connected) {
+					selDevices.append($("<option>").attr('value', i).text(
+							devices[i].id + ' - ' + devices[i].name));
+				}
+			}
+		});
+
+	}
+
+	function selectDevice() {
+
+		var index = $('#devices').val()
+		deviceID = devices[index].id;
+		console.log("Changed device Id" + deviceID);
+
+	}
 </script>
-</head>	
+</head>
 
 <body>
 
-<div class="container">
+	<div class="container">
 
-  <div class="page-header">
-	  <div class="row">
-    	<div class="col-md-8">
-    		<h1>Cloud Foundry IoT Example</h1>
-    		<p class="lead">Internet Of Things Application on the Cloud</p>
-    	</div>
-    	<div class="col-md-4">
-    		<img src="images/sensor.jpg"
-	class="img-rounded img-responsive" alt="particle.io"
-	width="60" height="20">
-    	</div>
+		<div class="page-header">
+			<div class="row">
+				<div class="col-md-8">
+					<h1>Cloud Foundry IoT Example</h1>
+					<p class="lead">Internet Of Things Application on the Cloud</p>
+				</div>
+				<div class="col-md-4">
+					<img src="images/sensor.jpg" class="img-rounded img-responsive"
+						alt="particle.io" width="60" height="20">
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="form-devices">
+				<label for="devices">Devices</label> <select class="form-control"
+					id="devices" onchange="selectDevice()">
+				</select>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-2">
+				<div id="gaugeVolts" class="gauge"></div>
+			</div>
+			<div class="col-md-2">
+				<div id="gaugeTemperature" class="gauge"></div>
+				<h4>LED On/Off</h4>
+				<input id="bOn" type="button" onClick="switchOn()"
+					class="btn btn-danger" value="ON" /> <input id="bOff"
+					type="button" onClick="switchOff()" class="btn btn-default"
+					value="OFF" /> <span id="above40"></span>
+			</div>
+			<div class="col-md-8">
+				<h4>Sensor Approx. Location</h4>
+				<div id="map-canvas"></div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12">
+				<h4>Temperature Stream</h4>
+				<div id="js-legend" class="chart-legend"></div>
+				<canvas id="updating-chart" width="300" height="100"></canvas>
+			</div>
+		</div>
+
+		<div class="footer">
+			<br />
+			<p>Built by Pivotal.io</p>
+		</div>
+
 	</div>
-  </div>
 
- 
-  <div class="row">
-    <div class="col-md-2">
-    	<div id="gaugeVolts" class="gauge"></div>
-   </div>
-    <div class="col-md-2">
-    	<div id="gaugeTemperature" class="gauge"></div>
-    	<h4>LED On/Off</h4>	
-		<input id="bOn" type="button" onClick="switchOn()" class="btn btn-danger" value="ON"/>
-		<input id="bOff" type="button" onClick="switchOff()" class="btn btn-default" value="OFF"/>
-		<span id="above40"></span>
-   </div>
-    <div class="col-md-8">
-  		<h4 >Sensor Approx. Location</h4>
-        <div id="map-canvas"></div>
-	</div>
-  </div>
+	<script>
+		var gaugeVolts = new JustGage({
+			id : "gaugeVolts",
+			value : 0,
+			min : 0,
+			max : 3.3,
+			decimals : 2,
+			title : "Light",
+			levelColorsGradient : false,
+			levelColors : [ '#000000', '#ffffcc', '#ffff00' ],
+			label : "Volts"
+		});
+		var gaugeTemperature = new JustGage({
+			id : "gaugeTemperature",
+			value : 0,
+			min : 10,
+			max : 50,
+			decimals : 1,
+			title : "Temperature",
+			label : "Celsius"
+		});
 
-  <div class="row">
-    <div class="col-md-12">
-  		<h4 >Temperature Stream</h4>
-  		<canvas id="updating-chart" width="300" height="100"></canvas>
-	</div>
-  </div>
+		// startup calls
+		getVolts();
+		ledStatus();
+		location();
+		devices();
 
-<div class="footer">
-</br>
-     <p>Built by Pivotal.io</p>
-  </div>
+		var canvas = document.getElementById('updating-chart');
+		var ctx = canvas.getContext('2d');
 
-</div>
+		var startingData = {
+			labels : [],
+			datasets : [ {
+				label : "Device 1",
+				yAxisID : "ID 1",
+				fillColor : "rgba(151,187,205,0)",
+				strokeColor : "rgba(151,187,205,1)",
+				pointColor : "rgba(151,187,205,1)",
+				pointStrokeColor : "#fff",
+				data : []
+			}, {
+				label : "Device 2",
+				yAxisID : "ID 2",
+				fillColor : "rgba(220,220,220,0)",
+				strokeColor : "rgba(220,220,220,1)",
+				pointColor : "rgba(200,200,200,1)",
+				pointStrokeColor : "#fff",
+				data : []
+			} ]
+		};
 
-<script>
-var gaugeVolts = new JustGage({
-    id: "gaugeVolts",
-    value: 0,
-    min: 0,
-    max: 3.3,
-    decimals: 2,
-    title: "Light",
-    levelColorsGradient: false,
-    levelColors: ['#000000', '#ffffcc', '#ffff00'],
-    label: "Volts"
-});
-var gaugeTemperature = new JustGage({
-    id: "gaugeTemperature",
-    value: 0,
-    min: 10,
-    max: 50,
-    decimals: 1,
-    title: "Temperature",
-    label: "Celsius"
-});
+		var options = {
+			responsive : true,
+			animationSteps : 20,
+			legendTemplate : '<ul>'
+					+ '<% for (var i=0; i<datasets.length; i++) { %>'
+					+ '<li>'
+					+ '<span style=\"background-color:<%=datasets[i].strokeColor%>\">'
+					+ '<% if (datasets[i].label) { %><%= datasets[i].label %><% } %>'
+					+ '</span></li>' + '<% } %>' + '</ul>',
+			legend : {
+				display : true
+			},
+			title : {
+				display : true,
+				text : 'Custom Chart Title'
+			},
+			scales : {
+				xAxes : [ {
+					type : 'time',
+					time : {
+						displayFormats : {
+							quarter : 'mm:ss'
+						}
+					}
+				} ],
+				yAxes : [ {
+					ticks : {
+						beginAtZero : true
+					}
+				} ]
+			}
+		};
 
-getVolts();
-ledStatus();
-location();
+		var config = {
+			type : 'line',
+			data : startingData,
+			options : options
+		};
 
-var canvas = document.getElementById('updating-chart');
-var ctx = canvas.getContext('2d');
+		// Reduce the animation steps for demo clarity.
+		var myLiveChart = new Chart(ctx, config).Line(startingData, options);
+		$('#js-legend').html(myLiveChart.generateLegend());
 
-var startingData = {
-      labels: [],
-      datasets: [
-          {
-              fillColor: "rgba(220,220,220,0)",
-              strokeColor: "rgba(220,220,220,1)",
-              pointColor: "rgba(200,200,200,1)",
-              pointStrokeColor: "#fff",
-              data: []
-          }
-      ]
-    };
+		//var myLiveChart = new Chart(ctx, config);
 
-  var options = {
-  		responsive: true,
-  		animationSteps: 20,
-    	title: {
-            display: true,
-            text: 'Custom Chart Title'
-        },
-        scales: {
-            xAxes: [{
-                type: 'time',
-                time: {
-                    displayFormats: {
-                        quarter: 'mm:ss'
-                    }
-                }
-            }],
-            yAxes: [{
-                ticks: {
-                    beginAtZero:true
-                }
-            }]
-        }
-    };
-
-var config = { 
-	type: 'line',
-	data: startingData,
-	options: options};
-
-// Reduce the animation steps for demo clarity.
-var myLiveChart = new Chart(ctx, config).Line(startingData, options);
-//var myLiveChart = new Chart(ctx, config);
-
-/* MMB: Update from existing pooling 
-setInterval(function(){
-  // Add two random numbers for each dataset
-  myLiveChart.addData([Math.random() * 100], ++latestLabel);
-  // Remove the first point so we dont just add values forever
-  myLiveChart.removeData();
-}, 5000);
-*/
-
-</script>
+		/* MMB: Update from existing pooling 
+		 setInterval(function(){
+		 // Add two random numbers for each dataset
+		 myLiveChart.addData([Math.random() * 100], ++latestLabel);
+		 // Remove the first point so we dont just add values forever
+		 myLiveChart.removeData();
+		 }, 5000);
+		 */
+	</script>
 
 </body>
 </html>
