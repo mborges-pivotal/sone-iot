@@ -114,6 +114,9 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 	// Still used for reading variables and calling functions
 	var deviceID = "3c0023000a47353138383138"
 
+	var philDeviceID = "190039000147353138383138";
+	var marceloDeviceID = "3c0023000a47353138383138";
+
 	var devices;
 
 	var eventSource = new EventSource("/events");
@@ -130,12 +133,15 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 
 	// EVENTS
 
+	// MMB - print device id
 	eventSource.addEventListener('above40', function(e) {
 		var parsedData = JSON.parse(e.data);
 		var data = parsedData.data.split(",");
 		console.log(parsedData.data);
-		$('#above40').text(data);
+		$('#above40').text(data + " - " + parsedData.coreid);
 	}, false);
+
+	var temperature, temperature2;
 
 	eventSource.addEventListener('temperature', function(e) {
 		var data = JSON.parse(e.data);
@@ -146,13 +152,19 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 			console.log("receive event for new device - " + lastEventDeviceId);
 		}
 
-		temperature = parseFloat(evtData);
-		temperature = temperature.toFixed(2);
+		if (data.coreid == marceloDeviceID) {
+			temperature = parseFloat(evtData);
+			temperature = temperature.toFixed(2);
+		} else {
+			temperature2 = parseFloat(evtData) + 1;
+			temperature2 = temperature2.toFixed(2);
+		}
 
-		temperature2 = parseFloat(evtData) + 1;
-		temperature2 = temperature2.toFixed(2);
-
-		gaugeTemperature.refresh(temperature);
+		if (deviceID == marceloDeviceID) {
+			gaugeTemperature.refresh(temperature);
+		} else {
+			gaugeTemperature.refresh(temperature2);
+		}
 
 		myLiveChart.addData([ temperature, temperature2 ], xDataPoint());
 		if (myLiveChart.datasets[0].points.length > 20) {
@@ -273,15 +285,11 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 	<div class="container">
 
 		<div class="page-header">
-			<div class="row">
-				<div class="col-md-8">
-					<h1>Cloud Foundry IoT Example</h1>
-					<p class="lead">Internet Of Things Application on the Cloud</p>
-				</div>
-				<div class="col-md-4">
-					<img src="images/sensor.jpg" class="img-rounded img-responsive"
-						alt="particle.io" width="60" height="20">
-				</div>
+			<div class="row" style="background-color: #004d47">
+				<h1 class="text-center" style="color: white;">Pivotal Cloud
+					Foundry IoT Example</h1>
+				<p class="text-center" style="color: white;">Internet Of Things
+					Application on the Cloud</p>
 			</div>
 		</div>
 
@@ -360,7 +368,7 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 		var startingData = {
 			labels : [],
 			datasets : [ {
-				label : "Device 1",
+				label : "3c0023000a47353138383138",
 				yAxisID : "ID 1",
 				fillColor : "rgba(151,187,205,0)",
 				strokeColor : "rgba(151,187,205,1)",
@@ -368,7 +376,7 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 				pointStrokeColor : "#fff",
 				data : []
 			}, {
-				label : "Device 2",
+				label : "190039000147353138383138",
 				yAxisID : "ID 2",
 				fillColor : "rgba(220,220,220,0)",
 				strokeColor : "rgba(220,220,220,1)",
