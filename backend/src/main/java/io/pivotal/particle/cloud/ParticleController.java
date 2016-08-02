@@ -58,6 +58,7 @@ public class ParticleController {
 
 		MultiValueMap<String, String> parms = new LinkedMultiValueMap<String, String>();
 		parms.add("args", args);
+		parms.add("access_token", accessToken);
 		
 		RestTemplate restTemplate = new RestTemplate();
 		
@@ -65,7 +66,7 @@ public class ParticleController {
 		HttpEntity<MultiValueMap<String,String>> entity =
 		            new HttpEntity<MultiValueMap<String, String>>(parms, null);
 		
-		return restTemplate.postForObject(getDeviceActionUrl(id, name), entity, Function.class);
+		return restTemplate.postForObject(getDeviceFunctionUrl(id, name), entity, Function.class);
 
 	}
 
@@ -84,6 +85,10 @@ public class ParticleController {
 
 	private String getDeviceActionUrl(String id, String name) {
 		return baseUrl + "/" + id + "/" + name + "?access_token=" + accessToken;
+	}
+
+	private String getDeviceFunctionUrl(String id, String name) {
+		return baseUrl + "/" + id + "/" + name;
 	}
 	
 }

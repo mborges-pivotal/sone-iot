@@ -261,6 +261,12 @@ curl https://api.spark.io/v1/devices/3c0023000a47353138383138/led -d "args=on" -
 		$.get("/devices/", function(data) {
 			devices = data;
 			for ( var i in devices) {
+				
+				// I don't want to show internet button
+				if (devices[i].name == "Internet_button") {
+					continue;
+				}
+				
 				if (devices[i].connected) {
 					selDevices.append($("<option>").attr('value', i).text(
 							devices[i].id + ' - ' + devices[i].name));

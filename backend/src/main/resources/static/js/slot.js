@@ -4,9 +4,9 @@ var IMAGE_TOP_MARGIN = 5;
 var IMAGE_BOTTOM_MARGIN = 5;
 var SLOT_SEPARATOR_HEIGHT = 2
 var SLOT_HEIGHT = IMAGE_HEIGHT + IMAGE_TOP_MARGIN + IMAGE_BOTTOM_MARGIN + SLOT_SEPARATOR_HEIGHT; // how many pixels one slot image takes
-var RUNTIME = 3000; // how long all slots spin before starting countdown
-var SPINTIME = 1000; // how long each slot spins at minimum
-var ITEM_COUNT = 6 // item count in slots
+var RUNTIME = 2000; // how long all slots spin before starting countdown
+var SPINTIME = 500; // how long each slot spins at minimum
+var ITEM_COUNT = 5 // item count in slots
 var SLOT_SPEED = 15; // how many pixels per second slots roll
 var DRAW_OFFSET = 45 // how much draw offset in slot display from top
 
@@ -100,7 +100,7 @@ eventSource.addEventListener('slot', function(e) {
 	{id: 'buildpacks-64'},
 	{id: 'ers-64'},
 	//{id: 'metrics-64'},
-	{id: 'mysql-64'},
+	//{id: 'mysql-64'},
 	{id: 'p-64'},
 	{id: 'cf-64'},
 	{id: 'tracker-64'}
@@ -322,17 +322,21 @@ Game.prototype.update = function() {
 	$('#results').show();
 	if (that.items1[that.result1].id == 'cf-64') {
 	    ec++;
+	    $.post("device/1c001f000447353138383138/rainbow", {args: "1"});
 	}
 	if (that.items2[that.result2].id == 'cf-64') {
 	    ec++;
+	    $.post("device/1c001f000447353138383138/rainbow", {args: "1"});
 	}
 	if (that.items3[that.result3].id == 'cf-64') {
 	    ec++;
+	    $.post("device/1c001f000447353138383138/rainbow", {args: "1"});
 	}
 
     if (that.items1[that.result1] == that.items2[that.result2] && 
     	that.items2[that.result2] == that.items3[that.result3]) {
     	ec = 3; // JACKPOT
+	    $.post("device/1c001f000447353138383138/rainbow", {args: "10"});
     }
 
 	$('#multiplier').text(ec);
@@ -379,6 +383,6 @@ Game.prototype.draw = function( force ) {
 	    }
 	    // translate canvas location
 	    this[cp].css(this.cssTransform, this.trnOpen + '0px, '+(this[offsetp] + DRAW_OFFSET)+'px' + this.trnClose);
+		}
 	}
-    }
 }
