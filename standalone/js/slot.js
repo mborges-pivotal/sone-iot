@@ -6,7 +6,7 @@ var SLOT_SEPARATOR_HEIGHT = 2
 var SLOT_HEIGHT = IMAGE_HEIGHT + IMAGE_TOP_MARGIN + IMAGE_BOTTOM_MARGIN + SLOT_SEPARATOR_HEIGHT; // how many pixels one slot image takes
 var RUNTIME = 3000; // how long all slots spin before starting countdown
 var SPINTIME = 1000; // how long each slot spins at minimum
-var ITEM_COUNT = 7 // item count in slots
+var ITEM_COUNT = 6 // item count in slots
 var SLOT_SPEED = 15; // how many pixels per second slots roll
 var DRAW_OFFSET = 45 // how much draw offset in slot display from top
 
@@ -105,7 +105,6 @@ eventSource.addEventListener('slot', function(e) {
 	{id: 'buildpacks-64'},
 	{id: 'ers-64'},
 	{id: 'metrics-64'},
-	{id: 'mysql-64'},
 	{id: 'p-64'},
 	{id: 'cf-64'},
 	{id: 'tracker-64'}
